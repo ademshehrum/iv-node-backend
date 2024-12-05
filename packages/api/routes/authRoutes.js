@@ -11,4 +11,16 @@ router.post("/login", login);
 router.post("/logout", logout)
 router.get("/getProfile", authenticate, getProfile);
 
+router.post("/refresh-token", authenticate, (req, res) => {
+    const { id, role } = req.user;
+  
+    try {
+      const newToken = signToken({ id, role });
+      res.status(200).send({ success: true, token: newToken });
+    } catch (err) {
+      res.status(500).send({ success: false, message: "Failed to generate token." });
+    }
+});
+  
+
 module.exports = router;
