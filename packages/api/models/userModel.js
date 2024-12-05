@@ -75,6 +75,22 @@ const getUserById = async (id) => {
   return results[0]; // Return the first result or null
 };
 
+// update role after payment done
+const updateUserRole = async (userId, role) => {
+  const query = "UPDATE users SET role = ? WHERE id = ?";
+  const result = await executeQuery(query, [role, userId]);
+  return result.affectedRows > 0;
+};
+
+module.exports = {
+  updateUserRole,
+  updatePaymentStatus,
+  createPaymentRecord,
+  findUserIdByPaymentKey,
+  updateUserRole,
+};
+
+
 module.exports = {
   getUserByEmail,
   createUser,
