@@ -21,7 +21,7 @@ const subscribe = async (req, res) => {
       email,
       name,
       redirectUrl: `${process.env.FRONTEND_URL}/payment-status`,
-      callbackUrl: `${process.env.BACKEND_URL}/api/payment/callback`,
+      callbackUrl: `${process.env.BACKEND_URL}/api/subscription/callback`,
       apiKey: process.env.MY_API_KEY
     });
 

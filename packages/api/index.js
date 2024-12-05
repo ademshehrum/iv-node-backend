@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 
 // allow FE local / all
 const corsOptions = {
-  origin: "http://localhost:3001",
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 };
 
