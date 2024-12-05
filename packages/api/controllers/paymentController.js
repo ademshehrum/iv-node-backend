@@ -1,25 +1,26 @@
-const { findUserIdByPaymentKey } = require("../models/userModel");
+const express = require("express");
+const router = express.Router();
+const { getPaymentByRefNo } = require("../models/paymentModel");
 
-const getPaymentStatus = async (req, res) => {
-  const { uniqueKey } = req.query;
+router.get("/status", async (req, res) => {
+  const { refNo } = req.query;
 
-  if (!uniqueKey) {
-    return res.status(400).send({ success: false, message: "Unique key is required." });
+  if (!refNo) {
+    return res.status(400).send({ success: false, message: "Payment reference number is required." });
   }
 
   try {
-    const userId = await findUserIdByPaymentKey(uniqueKey);
+    const payment = await getPaymentByRefNo(refNo);
 
-    if (!userId) {
+    if (!payment) {
       return res.status(404).send({ success: false, message: "Payment not found." });
     }
 
-    res.status(200).send({ success: true, message: "Payment verified successfully." });
+    res.status(200).send({ success: true, data: payment });
   } catch (err) {
-    res.status(500).send({ success: false, message: "Error fetching payment status." });
+    console.error("Error fetching payment status:", err.message);
+    res.status(500).send({ success: false, message: "Server error." });
   }
-};
+});
 
-module.exports = {
-  getPaymentStatus,
-};
+module.exports = router;
