@@ -8,6 +8,8 @@ const authRoutes = require("./routes/authRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+
 const cors = require("cors");
 
 // load env var
@@ -42,7 +44,7 @@ app.use("/api/auth", authRoutes); //auth
 app.use("/api/wishlist", wishlistRoutes); // wishlist
 app.use("/api", bookRoutes); // book
 app.use("/api/subscription", subscriptionRoutes); //subscribe
-
+app.use("/api/payment", paymentRoutes); // check payment status
 
 app.use((req, res) => {
   logHelper.warn(`404 Not Found: ${req.method} ${req.url}`);
