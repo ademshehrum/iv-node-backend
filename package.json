@@ -1,0 +1,10 @@
+{
+  "name": "demo-payment-node",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "nodemon packages/api/index.js"
+  }
+}
