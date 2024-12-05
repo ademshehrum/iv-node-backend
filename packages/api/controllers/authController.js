@@ -204,4 +204,16 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, setPassword, resendRegistrationEmail, login, logout, getProfile };
+//refresh token
+const refreshToken = (req, res) => {
+  try {
+    const { id, role } = req.user;
+    const token = signToken({ id, role });
+    res.status(200).send({ success: true, token });
+  } catch (err) {
+    console.error("Error refreshing token:", err.message);
+    res.status(500).send({ success: false, message: "Failed to generate token." });
+  }
+};
+
+module.exports = { register, setPassword, resendRegistrationEmail, login, logout, getProfile, refreshToken };
