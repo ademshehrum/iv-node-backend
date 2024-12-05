@@ -43,7 +43,7 @@ const getUserByUUID = async (uuid) => {
   return results[0] || null;
 };
 
-// create payment record
+// Create payment record
 const createPaymentRecord = async ({ userId, uniqueKey, refNo, status, amount }) => {
   const query = `
     INSERT INTO payments (user_id, payment_unique_key, payment_ref_no, payment_status, payment_amount)
@@ -52,7 +52,7 @@ const createPaymentRecord = async ({ userId, uniqueKey, refNo, status, amount })
   return await executeQuery(query, [userId, uniqueKey, refNo, status, amount]);
 };
 
-// Update Payment Status
+// Update payment status
 const updatePaymentStatus = async (uniqueKey, status) => {
   const query = `
     UPDATE payments SET payment_status = ? WHERE payment_unique_key = ?
@@ -60,7 +60,7 @@ const updatePaymentStatus = async (uniqueKey, status) => {
   return await executeQuery(query, [status, uniqueKey]);
 };
 
-// get user by payment_key
+// Get user by payment key
 const findUserIdByPaymentKey = async (uniqueKey) => {
   const query = `
     SELECT user_id FROM payments WHERE payment_unique_key = ?
@@ -68,28 +68,20 @@ const findUserIdByPaymentKey = async (uniqueKey) => {
   const results = await executeQuery(query, [uniqueKey]);
   return results[0]?.user_id;
 };
-// get by id
+
+// Get user by ID
 const getUserById = async (id) => {
   const query = "SELECT * FROM users WHERE id = ?";
-  const [results] = await db.query(query, [id]);
-  return results[0]; // Return the first result or null
+  const results = await executeQuery(query, [id]);
+  return results[0] || null;
 };
 
-// update role after payment done
+// Update user role after payment completion
 const updateUserRole = async (userId, role) => {
   const query = "UPDATE users SET role = ? WHERE id = ?";
   const result = await executeQuery(query, [role, userId]);
   return result.affectedRows > 0;
 };
-
-module.exports = {
-  updateUserRole,
-  updatePaymentStatus,
-  createPaymentRecord,
-  findUserIdByPaymentKey,
-  updateUserRole,
-};
-
 
 module.exports = {
   getUserByEmail,
@@ -100,4 +92,5 @@ module.exports = {
   updatePaymentStatus,
   findUserIdByPaymentKey,
   getUserById,
+  updateUserRole,
 };
