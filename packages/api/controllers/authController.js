@@ -26,7 +26,7 @@ const register = async (req, res) => {
 
     const token = signToken({ uuid }, "1d");
 
-    const link = `${process.env.FRONTEND_URL}set-password?token=${token}`;
+    const link = `${process.env.FRONTEND_URL}/set-password?token=${token}`;
     const emailContent = [
       { Key: "name", Value: name },
       { Key: "url", Value: link },

@@ -30,7 +30,7 @@ const subscribe = async (req, res) => {
     await createPaymentRecord({
       userId: req.user.id,
       uniqueKey: paymentDetails.payment_unique_key,
-      refNo: paymentDetails.payment_ref_no,
+      refNo: refNo,
       status: paymentDetails.payment_status,
       amount: paymentDetails.payment_amount,
     });
