@@ -21,12 +21,10 @@ const subscribe = async (req, res) => {
       email,
       name,
       redirectUrl: `${process.env.FRONTEND_URL}/payment-status`,
-      callbackUrl: `${process.env.BACKEND_URL}/api/subscription/callback`,
+      callbackUrl: `${process.env.BACKEND_URL}/api//callback`,
       apiKey: process.env.MY_API_KEY
     });
 
-    // console.log(paymentResponse.data);
-    // return;
     const paymentDetails = paymentResponse.data.paymentDetails;
 
     await createPaymentRecord({
@@ -45,37 +43,59 @@ const subscribe = async (req, res) => {
   }
 };
 
-// payment callback
 const paymentCallback = async (req, res) => {
-  const { payment_unique_key, payment_status } = req.body.paymentDetails;
-
   try {
-    logHelper.info(`Payment callback received: ${JSON.stringify(req.body)}`);
+    const { payload } = req.body;
+
+    if (!payload) {
+      return res.status(400).send({
+        success: false,
+        message: "Payload is required.",
+      });
+    }
+
+    const decodedPayload = Buffer.from(payload, "base64").toString("utf8");
+
+    const paymentDetails = JSON.parse(decodedPayload);
+
+    console.log("Decoded payment dets: ", paymentDetails);
+
+    const {
+      payment_unique_key,
+      payment_status,
+      payment_amount,
+      payment_ref_no,
+    } = paymentDetails;
 
     if (!payment_unique_key || !payment_status) {
-      logHelper.warn("Invalid callback parameters.");
-      return res.status(400).send("Invalid callback parameters.");
+      return res.status(400).send({
+        success: false,
+        message: "Invalid payload: missing required fields.",
+      });
     }
 
-    // update payment status
-    await updatePaymentStatus(payment_unique_key, payment_status);
+    if (payment_status === "completed") {
+      await updatePaymentStatus(payment_unique_key, payment_status);
 
-    if (payment_status === "success") {
       const userId = await findUserIdByPaymentKey(payment_unique_key);
       if (!userId) {
-        logHelper.warn(`User not found for payment key: ${payment_unique_key}`);
-        return res.status(404).send("User not found.");
+        return res.status(404).send({
+          success: false,
+          message: "User not found for the given payment key.",
+        });
       }
 
-      // update role to "subscribed"
       await updateUserRole(userId, "subscribed");
-      logHelper.info(`User ${userId} subscription updated to 'subscribed'.`);
     }
 
-    res.status(200).json({ status: "success" });
-  } catch (error) {
-    logHelper.error(`Error processing payment callback: ${error.message}`);
-    res.status(500).send("Server error.");
+    // send success response payment gateway / stop receveing callback anymore
+    res.status(200).send({ status: "success" });
+  } catch (err) {
+    console.error("Error processing payment callback:", err.message);
+    res.status(500).send({
+      success: false,
+      message: "Server error while processing payment callback.",
+    });
   }
 };
 
