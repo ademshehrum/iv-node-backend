@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Get all books (based on role)
 router.get("/books", authenticate, (req, res) => {
-  const books = getAllBooks(req.user.role); // Get books based on user role
+  const books = getAllBooks(req.user.role);
   res.status(200).json(books);
 });
 
